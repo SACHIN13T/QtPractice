@@ -9,14 +9,27 @@ find_package(Qt6 REQUIRED COMPONENTS Quick)
 qt_standard_project_setup(REQUIRES 6.8)
 
 qt_add_executable(appQtPractice
-    main.cpp
+
 )
 
 qt_add_qml_module(appQtPractice
     URI QtPractice
     VERSION 1.0
     QML_FILES
-        Main.qml
+
+        SOURCES src/main.cpp
+        QML_FILES qml/Main.qml
+        SOURCES assets/a.cpp
+        SOURCES assets/images/ab.cpp
+        SOURCES assets/icons/ab.cpp
+        SOURCES
+        SOURCES screens/sc.cpp
+        SOURCES resources/rs.cpp
+        SOURCES docs/README.md
+        RESOURCES resources/qml.qrc
+        QML_FILES screens/HomeScreen.qml
+        SOURCES inc/example.h
+        RESOURCES docs/README.md
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
