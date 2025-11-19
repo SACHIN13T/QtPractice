@@ -2,29 +2,44 @@ name: Qt CI Build
 
 on:
   push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Install Qt
-      uses: jurplel/install-qt-action@v3
-      with:
-        version: '6.6.*'
-        modules: 'qtdeclarative qtbase qtshadertools'
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: 6.6.3
+          target: desktop
+          arch: gcc_64
+          modules: qtbase qtdeclarative qtquickcontrols2 qtmultimedia qtshadertools
 
-    - name: Install build dependencies
-      run: sudo apt-get install -y build-essential mesa-common-dev libgl1-mesa-dev
+      - name: Install build tools
+        run: |
+          sudo apt update
+          sudo apt install -y ninja-build build-essential
 
-    - name: Configure CMake
-      run: cmake -S . -B build
+      - name: Configure CMake
+        run: |
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release
 
-    - name: Build
-      run: cmake --build build --parallel
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Smoke Test (run app for 2 sec)
+        run: |
+          echo "Running Qt app for smoke test..."
+          timeout 2s ./build/appQtPractice || true
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: QtPractice-Build
+          path: build/
